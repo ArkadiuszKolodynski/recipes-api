@@ -1,4 +1,5 @@
 export class UserPayloadDto {
-  username: string;
+  isAdmin: boolean;
   sub: number;
+  username: string;
 }
