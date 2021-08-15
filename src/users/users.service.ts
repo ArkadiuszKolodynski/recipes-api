@@ -16,8 +16,12 @@ export class UsersService {
     return this.prismaService.user.findMany();
   }
 
-  findOne(id: number): Promise<User> {
+  findOneById(id: number): Promise<User> {
     return this.prismaService.user.findUnique({ where: { id } });
+  }
+
+  findOneByUsername(username: string): Promise<User> {
+    return this.prismaService.user.findUnique({ where: { username } });
   }
 
   update(id: number, updateUserDto: UpdateUserDto): Promise<User> {

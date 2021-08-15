@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
-    "login" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "isAdmin" BOOLEAN DEFAULT false,
 
@@ -21,7 +21,7 @@ CREATE TABLE "Recipe" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User.login_unique" ON "User"("login");
+CREATE UNIQUE INDEX "User.username_unique" ON "User"("username");
 
 -- AddForeignKey
 ALTER TABLE "Recipe" ADD FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
