@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBody, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 import { AuthService } from './auth.service';
@@ -17,6 +17,7 @@ export class AuthController {
   @ApiUnauthorizedResponse({ description: 'Wrong credentials' })
   @PublicRoute()
   @Post('login')
+  @HttpCode(200)
   @UseGuards(LocalAuthGuard)
   login(@Req() req: Request): Promise<JwtDto> {
     return this.authService.login(req.user);
