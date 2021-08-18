@@ -4,6 +4,7 @@ import { SearchService } from './search.service';
 import { SearchController } from './search.controller';
 import { RecipesModule } from 'src/recipes/recipes.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
     RecipesModule,
+    PrismaModule,
   ],
   providers: [SearchService],
   controllers: [SearchController],
