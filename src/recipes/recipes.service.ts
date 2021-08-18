@@ -1,20 +1,33 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Recipe, Role, User } from '@prisma/client';
-import { CaslAbilityFactory } from 'src/auth/casl/casl-ability.factory';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
+import { RecipesDto } from './dto/recipes.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 
 @Injectable()
 export class RecipesService {
-  constructor(private readonly prismaService: PrismaService, private readonly caslAbilityFactory: CaslAbilityFactory) {}
+  private readonly resultsPerPage = 10;
+
+  constructor(private readonly prismaService: PrismaService) {}
 
   create(createRecipeDto: CreateRecipeDto, authorId: number): Promise<Recipe> {
     return this.prismaService.recipe.create({ data: { ...createRecipeDto, authorId } });
   }
 
-  findAll(): Promise<Recipe[]> {
-    return this.prismaService.recipe.findMany();
+  async findMany(page: number): Promise<RecipesDto> {
+    const total = await this.prismaService.recipe.count();
+    const skip = (page - 1) * this.resultsPerPage;
+    const results = await this.prismaService.recipe.findMany({
+      skip,
+      take: this.resultsPerPage,
+    });
+    return {
+      total,
+      prevPage: page > 1 ? page - 1 : null,
+      nextPage: skip + this.resultsPerPage < total ? page + 1 : null,
+      results,
+    };
   }
 
   findOne(id: number): Promise<Recipe> {
