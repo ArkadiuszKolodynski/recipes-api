@@ -9,7 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   imports: [
     ElasticsearchModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({ node: configService.get<string>('ELASTICSEARCH_URL') }),
+      useFactory: async (configService: ConfigService) => ({ node: configService.get<string>('elasticsearchUrl') }),
       inject: [ConfigService],
     }),
     RecipesModule,
