@@ -1,34 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PoliciesGuard } from 'src/auth/guards/policies.guard';
+import { CheckPolicies } from 'src/auth/decorators/check-policies.decorator';
+import { Prisma } from '@prisma/client';
+import { Action } from 'src/auth/casl/action.enum';
+import { AppAbility } from 'src/auth/casl/casl-ability.factory';
+import { UserDto } from './dto/user.dto';
 
 @Controller('users')
+@UseGuards(PoliciesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
-  }
-
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Update, Prisma.ModelName.User))
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<UserDto> {
     return this.usersService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Delete, Prisma.ModelName.User))
+  remove(@Param('id') id: string): Promise<UserDto> {
     return this.usersService.remove(+id);
   }
 }
