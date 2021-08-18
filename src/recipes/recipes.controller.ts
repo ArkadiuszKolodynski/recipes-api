@@ -1,4 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  HttpCode,
+  Req,
+  DefaultValuePipe,
+  Query,
+} from '@nestjs/common';
 import { Prisma, Recipe } from '@prisma/client';
 import { Request } from 'express';
 import { RecipesService } from './recipes.service';
@@ -8,6 +21,8 @@ import { PoliciesGuard } from 'src/auth/guards/policies.guard';
 import { CheckPolicies } from 'src/auth/decorators/check-policies.decorator';
 import { AppAbility } from 'src/auth/casl/casl-ability.factory';
 import { Action } from 'src/auth/casl/action.enum';
+import { ParseNaturalIntPipe } from './pipes/parse-natural-int.pipe';
+import { RecipesDto } from './dto/recipes.dto';
 
 @Controller('recipes')
 @UseGuards(PoliciesGuard)
@@ -22,8 +37,8 @@ export class RecipesController {
 
   @Get()
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Prisma.ModelName.Recipe))
-  findAll(): Promise<Recipe[]> {
-    return this.recipesService.findAll();
+  findMany(@Query('page', new DefaultValuePipe(1), ParseNaturalIntPipe) page: number): Promise<RecipesDto> {
+    return this.recipesService.findMany(page);
   }
 
   @Get(':id')
