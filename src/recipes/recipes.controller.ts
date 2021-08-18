@@ -43,32 +43,36 @@ export class RecipesController {
 
   @Get(':id')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Prisma.ModelName.Recipe))
-  findOne(@Param('id') id: string): Promise<Recipe> {
-    return this.recipesService.findOne(+id);
+  findOne(@Param('id', ParseNaturalIntPipe) id: number): Promise<Recipe> {
+    return this.recipesService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Req() req: Request, @Param('id') id: string, @Body() updateRecipeDto: UpdateRecipeDto): Promise<Recipe> {
-    return this.recipesService.update(+id, updateRecipeDto, req.user);
+  update(
+    @Req() req: Request,
+    @Param('id', ParseNaturalIntPipe) id: number,
+    @Body() updateRecipeDto: UpdateRecipeDto,
+  ): Promise<Recipe> {
+    return this.recipesService.update(id, updateRecipeDto, req.user);
   }
 
   @Delete(':id')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Delete, Prisma.ModelName.Recipe))
-  remove(@Param('id') id: string): Promise<Recipe> {
-    return this.recipesService.remove(+id);
+  remove(@Param('id', ParseNaturalIntPipe) id: number): Promise<Recipe> {
+    return this.recipesService.remove(id);
   }
 
   @HttpCode(200)
   @Post(':id/publish')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Publish, Prisma.ModelName.Recipe))
-  async publish(@Param('id') id: string): Promise<void> {
+  async publish(@Param('id', ParseNaturalIntPipe) id: number): Promise<void> {
     await this.recipesService.publish(+id);
   }
 
   @HttpCode(200)
   @Post(':id/unpublish')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Publish, Prisma.ModelName.Recipe))
-  async unpublish(@Param('id') id: string): Promise<void> {
+  async unpublish(@Param('id', ParseNaturalIntPipe) id: number): Promise<void> {
     await this.recipesService.unpublish(+id);
   }
 }

@@ -7,6 +7,7 @@ import { Prisma } from '@prisma/client';
 import { Action } from 'src/auth/casl/action.enum';
 import { AppAbility } from 'src/auth/casl/casl-ability.factory';
 import { UserDto } from './dto/user.dto';
+import { ParseNaturalIntPipe } from 'src/recipes/pipes/parse-natural-int.pipe';
 
 @Controller('users')
 @UseGuards(PoliciesGuard)
@@ -15,13 +16,13 @@ export class UsersController {
 
   @Patch(':id')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Update, Prisma.ModelName.User))
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<UserDto> {
+  update(@Param('id', ParseNaturalIntPipe) id: number, @Body() updateUserDto: UpdateUserDto): Promise<UserDto> {
     return this.usersService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Delete, Prisma.ModelName.User))
-  remove(@Param('id') id: string): Promise<UserDto> {
+  remove(@Param('id', ParseNaturalIntPipe) id: number): Promise<UserDto> {
     return this.usersService.remove(+id);
   }
 }
