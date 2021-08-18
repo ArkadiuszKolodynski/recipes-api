@@ -16,12 +16,13 @@ export class RecipesService {
   }
 
   async findMany(page: number): Promise<RecipesDto> {
-    const total = await this.prismaService.recipe.count();
     const skip = (page - 1) * this.resultsPerPage;
     const results = await this.prismaService.recipe.findMany({
       skip,
       take: this.resultsPerPage,
     });
+    if (results.length === 0) throw new NotFoundException();
+    const total = await this.prismaService.recipe.count();
     return {
       total,
       prevPage: page > 1 ? page - 1 : null,
