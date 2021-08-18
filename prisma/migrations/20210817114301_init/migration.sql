@@ -1,9 +1,12 @@
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "isAdmin" BOOLEAN DEFAULT false,
+    "role" "Role" DEFAULT E'USER',
 
     PRIMARY KEY ("id")
 );
@@ -14,6 +17,7 @@ CREATE TABLE "Recipe" (
     "title" TEXT NOT NULL,
     "ingredients" TEXT[],
     "directions" TEXT[],
+    "imageUrl" TEXT,
     "published" BOOLEAN DEFAULT false,
     "authorId" INTEGER,
 

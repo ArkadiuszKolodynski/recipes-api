@@ -1,5 +1,7 @@
+import { Role } from '@prisma/client';
+
 export class UserPayloadDto {
-  isAdmin: boolean;
+  role: Role;
   sub: number;
   username: string;
 }

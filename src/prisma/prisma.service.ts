@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
@@ -7,22 +7,24 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   private readonly logger = new Logger(PrismaService.name);
 
   constructor() {
-    super({ log: [{ emit: 'event', level: 'query' }], rejectOnNotFound: () => new NotFoundException() });
+    super({ log: [{ emit: 'event', level: 'query' }] });
   }
 
   async onModuleInit() {
     await this.$connect();
 
     // log db queries
-    this.$on('query' as any, async (e: any) => {
+    this.$on('query' as any, async (e: Prisma.QueryEvent) => {
       this.logger.debug(`(${e.duration}ms) ${e.query}`);
       this.logger.debug(`Params: ${e.params}`);
     });
 
     // hash password on User.create
-    this.$use(async (params, next) => {
-      if (params.action === 'create' && params.model === Prisma.ModelName.User) {
-        params.args.data.password = await bcrypt.hash(params.args.data.password, 10);
+    this.$use(async (params: Prisma.MiddlewareParams, next: (params: Prisma.MiddlewareParams) => Promise<any>) => {
+      if (params.model === Prisma.ModelName.User && (params.action === 'create' || params.action === 'update')) {
+        if (params.args.data.password) {
+          params.args.data.password = await bcrypt.hash(params.args.data.password, 10);
+        }
       }
       return await next(params);
     });

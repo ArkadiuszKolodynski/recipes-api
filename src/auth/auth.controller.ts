@@ -4,12 +4,11 @@ import { AuthService } from './auth.service';
 import { JwtDto } from './dto/jwt.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { PublicRoute } from './decorators/public-route.decorator';
-import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly userService: UsersService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @PublicRoute()
   @Post('login')
@@ -21,6 +20,6 @@ export class AuthController {
   @PublicRoute()
   @Post('register')
   async register(@Body() userInfo: CreateUserDto): Promise<void> {
-    await this.userService.create(userInfo);
+    await this.authService.register(userInfo);
   }
 }

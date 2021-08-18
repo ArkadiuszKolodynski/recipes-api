@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -12,16 +12,15 @@ export class UsersService {
     return this.prismaService.user.create({ data: createUserDto });
   }
 
-  findAll(): Promise<User[]> {
-    return this.prismaService.user.findMany();
-  }
-
   findOneById(id: number): Promise<User> {
-    return this.prismaService.user.findUnique({ where: { id } });
+    return this.prismaService.user.findUnique({ where: { id }, rejectOnNotFound: () => new UnauthorizedException() });
   }
 
   findOneByUsername(username: string): Promise<User> {
-    return this.prismaService.user.findUnique({ where: { username } });
+    return this.prismaService.user.findUnique({
+      where: { username },
+      rejectOnNotFound: () => new UnauthorizedException(),
+    });
   }
 
   update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
