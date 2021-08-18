@@ -6,9 +6,18 @@ import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { SearchModule } from './search/search.module';
+import { ConfigModule } from '@nestjs/config';
+import configuration from './config/configuration';
 
 @Module({
-  imports: [PrismaModule, RecipesModule, UsersModule, AuthModule, SearchModule],
+  imports: [
+    PrismaModule,
+    ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+    RecipesModule,
+    UsersModule,
+    AuthModule,
+    SearchModule,
+  ],
   providers: [
     {
       provide: APP_GUARD,
