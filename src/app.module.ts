@@ -8,6 +8,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { SearchModule } from './search/search.module';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import configuration from './config/configuration';
     UsersModule,
     AuthModule,
     SearchModule,
+    ScheduleModule.forRoot(),
   ],
   providers: [
     {
